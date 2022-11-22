@@ -40,17 +40,17 @@ const Chart = () => {
   const totalMonths = moment(endDate)
     .endOf("month")
     .diff(moment(startDate).startOf("month"), "months", true);
-
+  var xAxis;
   if (totalweeks > 16) {
-    var xAxis = Array.from(
+    xAxis = Array.from(
       { length: totalMonths },
       (_, index) =>
-        `${moment(startDate).add("month", index).format("MM")}-${moment(
+        `${moment(startDate).add("month", index).format("MMMM")}-${moment(
           startDate
         ).format("YYYY")}`
     );
   } else if (totaldays > 30) {
-    var xAxis = Array.from(
+    xAxis = Array.from(
       { length: totalweeks },
       (_, index) =>
         `${moment(startDate).add("week", index).format("ww")}-${moment(
@@ -58,7 +58,7 @@ const Chart = () => {
         ).format("YYYY")}`
     );
   } else {
-    var xAxis = Array.from(
+    xAxis = Array.from(
       { length: totaldays },
       (_, index) =>
         `${moment(startDate).add("day", index).format("DD")}-${moment(
@@ -66,7 +66,7 @@ const Chart = () => {
         ).format("MMM-YYYY")}`
     );
   }
-
+  // console.debug("data", data);
   const placeholder = xAxis?.reduce((acc, curr) => {
     return {
       ...acc,
@@ -79,13 +79,20 @@ const Chart = () => {
 
   data &&
     data.data.conferences.forEach((item) => {
-      if (totaldays > 30) {
-        var date = moment(item.createdDate).format("WW-YYYY");
-      } else if (totalweeks > 16) {
-        var date = moment(item.createdDate).format("MMM-YYYY");
+      var date;
+      if (totaldays > 30 && totalweeks < 16) {
+        date = moment(item.createdDate).format("WW-YYYY");
+        console.log("week ran");
+      } else if (totalweeks > 16 && totaldays > 30) {
+        date = moment(item.createdDate).format("MMMM-YYYY");
+        console.log("month ran");
+      } else if (totalweeks <= 16 && totaldays <= 30) {
+        date = moment(item.createdDate).format("DD-MMM-YYYY");
+        console.log("day ran");
       } else {
-        var date = moment(item.createdDate).format("DD-MMM-YYYY");
+        console.log("hello");
       }
+
       if (date && placeholder[date]) {
         placeholder[date].conferences += 1;
       }
